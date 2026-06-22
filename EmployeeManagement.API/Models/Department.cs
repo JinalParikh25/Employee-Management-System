@@ -1,9 +1,15 @@
-﻿namespace EmployeeManagement.API.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace EmployeeManagement.API.Models
 {
     public class Department
     {
-        public int id { get; set; }
-        public string name { get; set; } = string.Empty;
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
+        public bool IsDeleted { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+
     }
 }
