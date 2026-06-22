@@ -1,9 +1,7 @@
-﻿using EmployeeManagement.API.Data;
-using EmployeeManagement.API.DTOs.DepartmentsDTOs;
-using EmployeeManagement.API.Models;
-using Microsoft.AspNetCore.Http;
+﻿using EmployeeManagement.API.DTOs.DepartmentsDTOs;
+using EmployeeManagement.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace EmployeeManagement.API.Controllers
 {
@@ -11,98 +9,55 @@ namespace EmployeeManagement.API.Controllers
     [ApiController]
     public class DepartmentsController : ControllerBase
     {
-        private ApplicationDbContext _context;
+        private readonly IDepartmentService _departmentService;
 
-        public DepartmentsController(ApplicationDbContext context)
+        public DepartmentsController(IDepartmentService departmentService)
         {
-            _context = context;
+            _departmentService = departmentService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetDepartments()
         {
-            var departments = await _context.Departments
-                                .Where(d => !d.IsDeleted)
-                                .Select(d => new DepartmentResponseDto
-                                {
-                                    Id = d.Id,
-                                    Name = d.Name,
-                                    Description = d.Description
-                                }).ToListAsync();
+            var departmentsdto = await _departmentService.GetDepartmentsAsync();
 
-            return Ok(departments);
+            return Ok(departmentsdto);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<DepartmentResponseDto>> GetDepartment(int id)
         {
-            var department = await _context.Departments.FindAsync(id);
+            var departmentResponseDto = await _departmentService.GetDepartmentAsync(id);
 
-            if(department == null) {
+            if (departmentResponseDto == null)
                 return NotFound();
-            }
 
-            DepartmentResponseDto departmentResponseDto = new DepartmentResponseDto
-            {
-                Id = department.Id,
-                Name = department.Name,
-                Description = department.Description
-            };
-
-            return departmentResponseDto;
+            return Ok(departmentResponseDto);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateDepartment(CreateDepartmentsDTos dto)
         {
-            var department = new Department
-            {
-                Name = dto.Name,
-                Description = dto.Description,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = null,
-
-            };
-
-            _context.Departments.Add(department);
-            await _context.SaveChangesAsync();
-
-            var departmentDto = new DepartmentResponseDto
-            {
-                Id = department.Id,
-                Name = department.Name,
-                Description = department.Description
-            };
-
-            return CreatedAtAction(nameof(GetDepartment), new { department.Id }, departmentDto);
+          var departmentResponseDto = await _departmentService.CreateDepartmentAsync(dto);
+            return CreatedAtAction(nameof(GetDepartment), new { id = departmentResponseDto.Id }, departmentResponseDto);
         }
 
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteDepartment(int id)
         {
-            var department = await _context.Departments.FindAsync(id);
-            if (department == null)
-            {
+           var deleted = await _departmentService.DeleteDepartmentAsync(id);
+
+            if (!deleted)
                 return NotFound();
-            }
-            department.IsDeleted = true;
-            department.UpdatedAt = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
             return NoContent();
-        }
+        } 
 
         [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateDepartment(int id, UpdateDepartmentsDTOs dto)
         {
-            var department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == id && !d.IsDeleted);
-            if (department == null)
-            {
+         var updated = await _departmentService.UpdateDepartmentAsync(id, dto);
+            if (!updated)
                 return NotFound();
-            }
-            department.Name = dto.Name;
-            department.Description = dto.Description;
-            department.UpdatedAt = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
             return NoContent();
         }
     }

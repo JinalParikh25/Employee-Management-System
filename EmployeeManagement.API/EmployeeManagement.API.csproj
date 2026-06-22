@@ -19,8 +19,6 @@
   <ItemGroup>
     <Folder Include="Common\" />
     <Folder Include="Migrations\" />
-    <Folder Include="Repositories\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>
