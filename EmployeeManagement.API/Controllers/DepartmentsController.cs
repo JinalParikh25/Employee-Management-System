@@ -36,7 +36,7 @@ namespace EmployeeManagement.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateDepartment(CreateDepartmentsDTos dto)
+        public async Task<IActionResult> CreateDepartment(CreateDepartmentsDto dto)
         {
           var departmentResponseDto = await _departmentService.CreateDepartmentAsync(dto);
             return CreatedAtAction(nameof(GetDepartment), new { id = departmentResponseDto.Id }, departmentResponseDto);

@@ -7,7 +7,7 @@ namespace EmployeeManagement.API.Services.Interfaces
     {
         Task<List<DepartmentResponseDto>> GetDepartmentsAsync();
         Task<DepartmentResponseDto> GetDepartmentAsync(int id);
-        Task<DepartmentResponseDto> CreateDepartmentAsync(CreateDepartmentsDTos dto);
+        Task<DepartmentResponseDto> CreateDepartmentAsync(CreateDepartmentsDto dto);
         Task<bool> UpdateDepartmentAsync(int id, UpdateDepartmentsDTOs dto);
         Task<bool> DeleteDepartmentAsync(int id);
 

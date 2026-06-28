@@ -13,7 +13,7 @@ namespace EmployeeManagement.API.Services
         {
             _departmentRepository = departmentRepository;
         }
-        public async Task<DepartmentResponseDto> CreateDepartmentAsync(CreateDepartmentsDTos dto)
+        public async Task<DepartmentResponseDto> CreateDepartmentAsync(CreateDepartmentsDto dto)
         {
             Department department = new Department
             {
