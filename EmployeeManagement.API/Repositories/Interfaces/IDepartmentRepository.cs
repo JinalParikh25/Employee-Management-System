@@ -10,6 +10,9 @@ namespace EmployeeManagement.API.Repositories.Interfaces
         Task<Department> GetByIdAsync(int id);
         Task AddAsync(Department department);
         Task SaveChangesAsync();
-        
+        Task<bool> IsDepartmentNameExistsAsync(Department department);
+        Task<bool> HasActiveEmployeesAsync(int departmentId);
+
+
     }
 }

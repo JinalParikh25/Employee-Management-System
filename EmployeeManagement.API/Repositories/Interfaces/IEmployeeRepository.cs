@@ -8,6 +8,8 @@ namespace EmployeeManagement.API.Repositories.Interfaces
         Task<Employee> GetByIdAsync(int id);
         Task AddAsync(Employee employee);
         Task saveChangesAsync();
+        Task<bool> IsEmailExistsAsync(string email);
+
 
     }
 }

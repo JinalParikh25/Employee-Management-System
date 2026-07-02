@@ -43,7 +43,7 @@ namespace EmployeeManagement.API.Controllers
         public async Task<IActionResult> UpdateEmployee(int id, UpdateEmployeeDto updateEmployeeDto)
         {
             var updatedEmployee = await _employeeService.UpdateEmployeeAsync(id, updateEmployeeDto);
-            if (updatedEmployee == null)
+            if (updatedEmployee == false)
             {
                 return NotFound();
             }

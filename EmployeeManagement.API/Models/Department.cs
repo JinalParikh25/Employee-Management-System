@@ -10,6 +10,6 @@ namespace EmployeeManagement.API.Models
         public bool IsDeleted { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-
+        public ICollection<Employee> Employees { get; set; } = new List<Employee>();
     }
 }

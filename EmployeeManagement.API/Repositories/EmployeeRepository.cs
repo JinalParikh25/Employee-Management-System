@@ -15,12 +15,12 @@ namespace EmployeeManagement.API.Repositories
         
         public async Task<List<Employee>> GetAllAsync()
         {
-            return await _applicationDbContext.Employees.Where(e => !e.IsDeleted).ToListAsync();
+            return await _applicationDbContext.Employees.OrderBy(e => e.Id).ToListAsync();
         }
 
         public async Task<Employee> GetByIdAsync(int id)
         {
-            return await _applicationDbContext.Employees.FirstOrDefaultAsync(e => e.Id == id && !e.IsDeleted);
+            return await _applicationDbContext.Employees.FindAsync(id);
         }
         public async Task AddAsync(Employee employee)
         {
@@ -30,5 +30,13 @@ namespace EmployeeManagement.API.Repositories
         {
             await _applicationDbContext.SaveChangesAsync();
         }
+        public async Task<bool> IsEmailExistsAsync(string email) 
+        {
+            return await _applicationDbContext.Employees.AnyAsync(e => e.Email == email);
+        }
+        //public async Task<bool> IsEmailExistsAsync(string email)
+        //{
+        //    return await _applicationDbContext.Employees.AnyAsync(e => e.Email == email);
+        //}
     }
 }

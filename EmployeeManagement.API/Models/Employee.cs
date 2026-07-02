@@ -1,4 +1,7 @@
-﻿namespace EmployeeManagement.API.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace EmployeeManagement.API.Models
 {
     public class Employee
     {
@@ -13,5 +16,6 @@
         public bool IsDeleted { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
+        public virtual Department Department { get; set; } = null!; 
     }
 }

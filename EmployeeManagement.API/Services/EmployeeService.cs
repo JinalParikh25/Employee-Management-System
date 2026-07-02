@@ -2,15 +2,18 @@
 using EmployeeManagement.API.Models;
 using EmployeeManagement.API.Repositories.Interfaces;
 using EmployeeManagement.API.Services.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace EmployeeManagement.API.Services
 {
     public class EmployeeService : IEmployeeService
     {
         private readonly IEmployeeRepository _employeeRepository;
-        public EmployeeService(IEmployeeRepository employeeRepository)
+        private readonly IDepartmentRepository _departmentRepository;
+        public EmployeeService(IEmployeeRepository employeeRepository, IDepartmentRepository departmentRepository)
         {
             _employeeRepository = employeeRepository;
+            _departmentRepository = departmentRepository;
         }
 
         public async Task<List<EmployeeResponseDto>> GetEmployeesAsync()
@@ -62,6 +65,10 @@ namespace EmployeeManagement.API.Services
                 DepartmentId = dto.DepartmentId
             };
 
+            await IsEmailExistsAsync(employee.Email);
+            await IsDepartmentExistAsync(employee.DepartmentId);
+            await IsJoiningDateInFuture(employee.JoiningDate);
+
             await _employeeRepository.AddAsync(employee);
             await _employeeRepository.saveChangesAsync();
             return new EmployeeResponseDto
@@ -98,6 +105,10 @@ namespace EmployeeManagement.API.Services
             if (employee == null)
                 return false;
 
+            await IsEmailExistsAsync(employee.Email);
+            await IsDepartmentExistAsync(employee.DepartmentId);
+            await IsJoiningDateInFuture(employee.JoiningDate);
+
             employee.FirstName = dto.FirstName;
             employee.LastName = dto.LastName;
             employee.Email = dto.Email;
@@ -109,6 +120,28 @@ namespace EmployeeManagement.API.Services
             
             await _employeeRepository.saveChangesAsync();
             return true;
+        }
+
+        public async Task IsEmailExistsAsync(string email)
+        {
+            if (await _employeeRepository.IsEmailExistsAsync(email))
+                throw new ArgumentException($"Email '{email}' already exists.");
+        }
+
+        public async Task IsDepartmentExistAsync(int departmentId)
+        {
+            var department = await _departmentRepository.GetByIdAsync(departmentId);
+
+            if (department == null)
+                throw new ArgumentException($"Department is not exists.");
+        }
+
+        public Task IsJoiningDateInFuture(DateTime joiningDate)
+        {
+            if (joiningDate > DateTime.UtcNow)
+                throw new ArgumentException($"Joining date not in future.");
+
+            return Task.CompletedTask;
         }
     }
 }

@@ -19,23 +19,31 @@ namespace EmployeeManagement.API.Repositories
 
         public async Task<List<Department>> GetAllAsync()
         {
-            return await _context.Departments.Where(d => !d.IsDeleted).ToListAsync();
+            return await _context.Departments.OrderBy(d => d.Id).ToListAsync();
         }
 
         public async Task<Department> GetByIdAsync(int id)
         {
-            return await _context.Departments.FirstOrDefaultAsync(d => d.Id == id && !d.IsDeleted);
+            return await _context.Departments.FindAsync(id);
         }
         public async Task AddAsync(Department department)
         {
             await _context.Departments.AddAsync(department);
-            
-        }
 
+        }
         public async Task SaveChangesAsync()
-        { 
+        {
             await _context.SaveChangesAsync();
         }
-       
+
+        public async Task<bool> IsDepartmentNameExistsAsync(Department department)
+        {
+            return await _context.Departments.AnyAsync(d => d.Name == department.Name);
+        }
+
+        public async Task<bool> HasActiveEmployeesAsync(int departmentId)
+        {
+            return await _context.Employees.AnyAsync(e => e.DepartmentId == departmentId);
+        }
     }
 }

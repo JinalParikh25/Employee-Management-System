@@ -24,6 +24,13 @@ namespace EmployeeManagement.API.Services
                 UpdatedAt = null
             };
 
+            var isDepartmentNameExists = await _departmentRepository.IsDepartmentNameExistsAsync(department);
+
+            if(isDepartmentNameExists)
+            {
+                throw new ArgumentException($"Department with name '{department.Name}' already exists.");
+            };
+
             await _departmentRepository.AddAsync(department);
 
             await _departmentRepository.SaveChangesAsync();
@@ -41,6 +48,12 @@ namespace EmployeeManagement.API.Services
            var department = await _departmentRepository.GetByIdAsync(id);
             if (department == null)
                 return false;
+
+            if(await _departmentRepository.HasActiveEmployeesAsync(id))
+            {
+                throw new InvalidOperationException(
+                 "Cannot delete department because active employees are assigned to it.");
+            }
 
             department.IsDeleted = true;
             department.UpdatedAt = DateTime.UtcNow;
